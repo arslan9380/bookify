@@ -1,5 +1,5 @@
 import 'package:bookify/helpers/auth_helper.dart';
-import 'package:bookify/screens/bookshop_owner_screens/owner_home.dart';
+import 'package:bookify/screens/bookshop_owner_screens/owner_home_screen.dart';
 import 'package:bookify/screens/widgets/auth_input_field.dart';
 import 'package:bookify/screens/widgets/custom_button.dart';
 import 'package:bookify/utils/static_info.dart';
@@ -87,19 +87,18 @@ class _LoginState extends State<Login> {
       ProgressDialog dialog = ProgressDialog(context);
       dialog.style(
         progressWidget: CircularProgressIndicator(),
-        message: "Please wait".tr,
+        message: "Please wait",
       );
       dialog.show();
 
       var result = await AuthHelper().login(email, password);
       print(result);
       dialog.hide();
-
       if (result == "success") {
         Widget page;
         if (StaticInfo.user.accountType == "user") {
         } else if (StaticInfo.user.accountType == "owner") {
-          page = OwnerHome();
+          page = OwnerHomeScreen();
         } else if (StaticInfo.user.accountType == "super_admin") {}
         Get.offAll(page);
       } else {

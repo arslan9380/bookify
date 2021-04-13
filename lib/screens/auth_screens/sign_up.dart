@@ -1,6 +1,6 @@
 import 'package:bookify/helpers/auth_helper.dart';
 import 'package:bookify/models/user.dart';
-import 'package:bookify/screens/bookshop_owner_screens/owner_home.dart';
+import 'package:bookify/screens/bookshop_owner_screens/owner_home_screen.dart';
 import 'package:bookify/screens/widgets/auth_input_field.dart';
 import 'package:bookify/screens/widgets/custom_button.dart';
 import 'package:bookify/utils/static_info.dart';
@@ -173,9 +173,9 @@ class _SignUpState extends State<SignUp> {
         Widget page;
         if (StaticInfo.user.accountType == "admin") {
           //  page = AdminHome();
-        } else if (result == "owner")
+        } else if (StaticInfo.user.accountType == "owner")
           setState(() {
-            page = OwnerHome();
+            page = OwnerHomeScreen();
           });
 
         Get.offAll(page);

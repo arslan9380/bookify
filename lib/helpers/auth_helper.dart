@@ -37,14 +37,16 @@ class AuthHelper {
           .signInWithEmailAndPassword(email: email, password: password);
 
       var response = await getUser(authResult.user.uid);
-      if (response != null) {
-        responseToBeReturned = "success";
-      } else {
-        responseToBeReturned = "fill details";
-      }
+
+      // if (response != null) {
+      //   responseToBeReturned = "success";
+      // } else {
+      //   responseToBeReturned = "fill details";
+      // }
+      responseToBeReturned = "success";
       return responseToBeReturned;
     } catch (error) {
-      print("Erro in logging the user : ${error?.message}//////");
+      print("Erro in logging the user : $error//////");
 
       return "${error?.code}";
     }
@@ -103,48 +105,15 @@ class AuthHelper {
 
   Future<dynamic> getUser(String uid) async {
     try {
-      var responseToBeReturned = "";
+      var responseToBeReturned;
       StaticInfo.user = UserModel.fromMap((await FirebaseFirestore.instance
               .collection(_usersKey)
               .doc(uid)
               .get())
           .data());
       if (StaticInfo.user.accountType == "owner") {
-        // await CoachAboutHelper()
-        //     .fetchCoachDetails(StaticInfo.user.uid)
-        //     .then((value) {
-        //   if (value != null) {
-        //     StaticInfo.coachDetails = value;
-        //     responseToBeReturned = true;
-        //   } else {
-        //     responseToBeReturned = null;
-        //   }
-        // });
       } else if (StaticInfo.user.accountType == "user") {
-        // await UserAboutHelper()
-        //     .fetchUserDetails(StaticInfo.user.uid)
-        //     .then((value) {
-        //   print(value);
-        //   print("asdfgh");
-        //   if (value != null) {
-        //     StaticInfo.userDetails = value;
-        //     responseToBeReturned = true;
-        //   } else {
-        //     responseToBeReturned = null;
-        //   }
-        // });
-      } else if (StaticInfo.user.accountType == "admin") {
-        // await UserAboutHelper()
-        //     .fetchUserDetails(StaticInfo.user.uid)
-        //     .then((value) {
-        //   if (value != null) {
-        //     StaticInfo.adminDetails = value;
-        //     responseToBeReturned = true;
-        //   } else {
-        //     responseToBeReturned = null;
-        //   }
-        // });
-      }
+      } else if (StaticInfo.user.accountType == "admin") {}
       return responseToBeReturned;
     } catch (e) {
       print("Error in assigning static info :$e");

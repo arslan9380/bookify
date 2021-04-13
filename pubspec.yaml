@@ -36,6 +36,13 @@ dependencies:
   connectivity: ^3.0.3
   toast: ^0.1.5
   progress_dialog: ^1.2.4
+  file_picker: ^3.0.1
+  cached_network_image: any
+  readmore: any
+  timeago_flutter: any
+  auto_size_text:
+
+
 
 
 dev_dependencies:

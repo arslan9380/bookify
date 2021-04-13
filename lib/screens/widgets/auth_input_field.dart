@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AuthInputField extends StatefulWidget {
-
   final String hint;
   final IconData icon;
   final TextEditingController controller;
@@ -12,17 +11,16 @@ class AuthInputField extends StatefulWidget {
   final int maxlines;
   final focusNode;
 
-  AuthInputField({
-    this.focusNode,
-    this.hint,
-    this.icon,
-    this.controller,
-    this.keyboardType = TextInputType.text,
-    this.obscure = false,
-    this.enable=true,
-    this.textAlignCenter=false,
-    this.maxlines
-  });
+  AuthInputField(
+      {this.focusNode,
+      this.hint,
+      this.icon,
+      this.controller,
+      this.keyboardType = TextInputType.text,
+      this.obscure = false,
+      this.enable = true,
+      this.textAlignCenter = false,
+      this.maxlines});
 
   @override
   _AuthInputFieldState createState() => _AuthInputFieldState();
@@ -41,20 +39,23 @@ class _AuthInputFieldState extends State<AuthInputField> {
   Widget build(BuildContext context) {
     return TextField(
       focusNode: widget.focusNode ?? null,
-      maxLines: widget.maxlines==null?1:3,
+      maxLines: widget.maxlines == null ? 1 : widget.maxlines,
       enabled: widget.enable,
       controller: widget.controller,
-      textAlign:widget.textAlignCenter==true?TextAlign.center:TextAlign.start,
-        style: TextStyle(
-          fontFamily: 'Montserrat',
-          fontSize: 14,
-          color: const Color(0xff4c3f58),
-        ),
+      textAlign:
+          widget.textAlignCenter == true ? TextAlign.center : TextAlign.start,
+      style: TextStyle(
+        fontFamily: 'Montserrat',
+        fontSize: 14,
+        color: const Color(0xff4c3f58),
+      ),
       keyboardType: widget.keyboardType,
       obscureText: widget.obscure ? obscure : widget.obscure,
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: TextStyle( color:Theme.of(context).iconTheme.color,),
+        hintStyle: TextStyle(
+          color: Theme.of(context).iconTheme.color,
+        ),
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
@@ -69,27 +70,31 @@ class _AuthInputFieldState extends State<AuthInputField> {
           maxHeight: MediaQuery.of(context).size.width * 0.5,
           maxWidth: MediaQuery.of(context).size.width * 0.5,
         ),
-        prefixIcon:widget.icon!=null? Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: CircleAvatar(
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Padding(
-              padding: const EdgeInsets.all(1.5),
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  widget.icon,
-                  color:IconTheme.of(context).color,
+        prefixIcon: widget.icon != null
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(1.5),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        widget.icon,
+                        color: IconTheme.of(context).color,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ):null,
+              )
+            : null,
         suffixIcon: !widget.obscure
             ? null
             : IconButton(
-                icon: Icon(obscure ?Icons.visibility: Icons.visibility_off,
-                  color:IconTheme.of(context).color,),
+                icon: Icon(
+                  obscure ? Icons.visibility : Icons.visibility_off,
+                  color: IconTheme.of(context).color,
+                ),
                 onPressed: () {
                   setState(() {
                     obscure = !obscure;
