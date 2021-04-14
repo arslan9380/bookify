@@ -1,4 +1,5 @@
 import 'package:bookify/models/user.dart';
+import 'package:bookify/utils/constants.dart';
 import 'package:bookify/utils/static_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,9 +22,9 @@ class AuthHelper {
               email: user.email, password: password);
       user.uid = authResult.user.uid;
       var saveResult = await saveUser(user);
-      if (saveResult != "success") return saveResult;
+      if (saveResult != Constants.success) return saveResult;
       StaticInfo.user = user;
-      return "success";
+      return Constants.success;
     } catch (error) {
       print("error in SigningUp the user : ${error.code}");
       return "${error.code}";
@@ -32,21 +33,13 @@ class AuthHelper {
 
   Future<String> login(String email, String password) async {
     try {
-      var responseToBeReturned;
       var authResult = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
-      var response = await getUser(authResult.user.uid);
-
-      // if (response != null) {
-      //   responseToBeReturned = "success";
-      // } else {
-      //   responseToBeReturned = "fill details";
-      // }
-      responseToBeReturned = "success";
-      return responseToBeReturned;
+      await getUser(authResult.user.uid);
+      return Constants.success;
     } catch (error) {
-      print("Erro in logging the user : $error//////");
+      print("Error in logging the user : $error//////");
 
       return "${error?.code}";
     }
@@ -59,15 +52,12 @@ class AuthHelper {
       responseToBerReturned = false;
     } else {
       var response = await getUser(result.uid);
-      print(response);
       if (response != null) {
         responseToBerReturned = true;
       } else {
-        print("returning fill details");
-        responseToBerReturned = "fill details";
+        responseToBerReturned = false;
       }
     }
-    print(responseToBerReturned);
     return responseToBerReturned;
   }
 
@@ -75,17 +65,15 @@ class AuthHelper {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
-      return "success";
-    } catch (err) {
-      return err.code;
+      return Constants.success;
+    } catch (e) {
+      return e.code;
     }
   }
 
   Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     StaticInfo.user = null;
-    //StaticInfo.coachDetails = null;
-    //StaticInfo.userDetails = null;
   }
 
   Future<String> saveUser(UserModel user) async {
@@ -95,10 +83,8 @@ class AuthHelper {
           .doc(user.uid)
           .set(user.toMap(), SetOptions(merge: true));
 
-      return "success";
+      return Constants.success;
     } catch (e) {
-      print("error in Saving user");
-
       return e;
     }
   }
@@ -111,9 +97,9 @@ class AuthHelper {
               .doc(uid)
               .get())
           .data());
-      if (StaticInfo.user.accountType == "owner") {
-      } else if (StaticInfo.user.accountType == "user") {
-      } else if (StaticInfo.user.accountType == "admin") {}
+      if (StaticInfo.user.accountType == Constants.user) {
+      } else if (StaticInfo.user.accountType == Constants.owner) {
+      } else if (StaticInfo.user.accountType == Constants.admin) {}
       return responseToBeReturned;
     } catch (e) {
       print("Error in assigning static info :$e");

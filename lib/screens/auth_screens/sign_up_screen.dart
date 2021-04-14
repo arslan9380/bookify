@@ -3,6 +3,7 @@ import 'package:bookify/models/user.dart';
 import 'package:bookify/screens/bookshop_owner_screens/owner_home_screen.dart';
 import 'package:bookify/screens/widgets/auth_input_field.dart';
 import 'package:bookify/screens/widgets/custom_button.dart';
+import 'package:bookify/utils/constants.dart';
 import 'package:bookify/utils/static_info.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,12 @@ import 'package:get/get.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 
-class SignUp extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController nameCon, emailCon, passwordCon, confirmCon;
   bool isForBusiness;
 
@@ -36,27 +37,27 @@ class _SignUpState extends State<SignUp> {
       child: Column(
         children: [
           AuthInputField(
-            hint: "Name".tr,
+            hint: "Name",
             icon: Icons.person,
             controller: nameCon,
           ),
           SizedBox(height: 5),
           AuthInputField(
-            hint: "Email".tr,
+            hint: "Email",
             icon: Icons.email,
             keyboardType: TextInputType.emailAddress,
             controller: emailCon,
           ),
           SizedBox(height: 5),
           AuthInputField(
-            hint: "Password".tr,
+            hint: "Password",
             icon: Icons.lock,
             obscure: true,
             controller: passwordCon,
           ),
           SizedBox(height: 5),
           AuthInputField(
-            hint: "Confirm Password".tr,
+            hint: "Confirm Password",
             icon: Icons.lock,
             obscure: true,
             controller: confirmCon,
@@ -78,11 +79,10 @@ class _SignUpState extends State<SignUp> {
                 Switch(
                   value: isForBusiness,
                   activeColor: Theme.of(context).primaryColor,
-                  inactiveThumbColor: Theme.of(context).accentColor,
-                  inactiveTrackColor:
-                      Theme.of(context).accentColor.withOpacity(0.2),
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey.withOpacity(0.2),
                   activeTrackColor:
-                      Theme.of(context).accentColor.withOpacity(0.5),
+                      Theme.of(context).primaryColor.withOpacity(0.5),
                   onChanged: (val) {
                     setState(() {
                       isForBusiness = !isForBusiness;
@@ -95,8 +95,10 @@ class _SignUpState extends State<SignUp> {
           Container(
             width: double.infinity,
             child: CustomButton(
-              text: "Sign Up".tr.toString().toUpperCase(),
-              onPressed: _signUp,
+              text: "Sign Up".toUpperCase(),
+              onPressed: () {
+                _signUp();
+              },
             ),
           ),
           SizedBox(height: 20),
@@ -106,7 +108,6 @@ class _SignUpState extends State<SignUp> {
               fontFamily: 'Montserrat',
               fontSize: 14,
               color: const Color(0xff4c3f58),
-              //  fontWeight: FontWeight.w500,
             ),
           ),
           GestureDetector(
@@ -140,14 +141,14 @@ class _SignUpState extends State<SignUp> {
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      Toast.show("Fill all fields".tr, context, duration: 3);
+      Toast.show("Fill all fields", context, duration: 3);
       return;
     } else if (password != confirmPassword) {
-      Toast.show('Password does not match'.tr, context, duration: 3);
+      Toast.show('Password does not match', context, duration: 3);
       return;
     }
     if (!email.contains("@") && !email.contains(".com")) {
-      Toast.show('Invalid email address'.tr, context, duration: 3);
+      Toast.show('Invalid email address', context, duration: 3);
       return;
     }
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -156,34 +157,33 @@ class _SignUpState extends State<SignUp> {
       ProgressDialog dialog = ProgressDialog(context);
       dialog.style(
         progressWidget: CircularProgressIndicator(),
-        message: "Please wait".tr,
+        message: "Please wait",
       );
       dialog.show();
 
       UserModel user = UserModel(
         name: name,
         email: email,
-        accountType: isForBusiness ? "owner" : "user",
+        accountType: isForBusiness ? Constants.owner : Constants.user,
       );
 
       var result = await AuthHelper().signUp(user, password);
       dialog.hide();
 
-      if (result == "success") {
+      if (result == Constants.success) {
         Widget page;
-        if (StaticInfo.user.accountType == "admin") {
-          //  page = AdminHome();
-        } else if (StaticInfo.user.accountType == "owner")
-          setState(() {
-            page = OwnerHomeScreen();
-          });
 
+        if (StaticInfo.user.accountType == Constants.user) {
+        } else if (StaticInfo.user.accountType == Constants.owner) {
+          // page = OwnerHomeScreen();
+        } else if (StaticInfo.user.accountType == Constants.admin) {}
+        page = OwnerHomeScreen();
         Get.offAll(page);
       } else {
         if (result == AuthStatus.ERROR_INVALID_EMAIL) {
-          Toast.show("Email address is invalid".tr, context, duration: 3);
+          Toast.show("Email address is invalid", context, duration: 3);
         } else if (result == AuthStatus.ERROR_WEAK_PASSWORD) {
-          Toast.show("Password should be at least 6 characters".tr, context,
+          Toast.show("Password should be at least 6 characters", context,
               duration: 3);
         } else if (result == AuthStatus.ERROR_EMAIL_ALREADY_IN_USE) {
           Toast.show("Email already in use", context, duration: 3);

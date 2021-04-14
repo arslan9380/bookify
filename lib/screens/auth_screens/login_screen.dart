@@ -2,6 +2,7 @@ import 'package:bookify/helpers/auth_helper.dart';
 import 'package:bookify/screens/bookshop_owner_screens/owner_home_screen.dart';
 import 'package:bookify/screens/widgets/auth_input_field.dart';
 import 'package:bookify/screens/widgets/custom_button.dart';
+import 'package:bookify/utils/constants.dart';
 import 'package:bookify/utils/static_info.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,12 @@ import 'package:get/get.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 
-class Login extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailCon = TextEditingController(),
       passwordCon = TextEditingController();
 
@@ -27,14 +28,14 @@ class _LoginState extends State<Login> {
           Column(
             children: [
               AuthInputField(
-                hint: "Email".tr,
+                hint: "Email",
                 icon: Icons.email,
                 keyboardType: TextInputType.emailAddress,
                 controller: emailCon,
               ),
               SizedBox(height: 10),
               AuthInputField(
-                hint: "Password".tr,
+                hint: "Password",
                 icon: Icons.lock,
                 obscure: true,
                 controller: passwordCon,
@@ -74,10 +75,10 @@ class _LoginState extends State<Login> {
     String password = passwordCon.text;
 
     if (email.isEmpty || password.isEmpty) {
-      Toast.show("Fill all fields".tr, context, duration: 3);
+      Toast.show("Fill all fields", context, duration: 3);
       return;
-    } else if (!email.contains("@") && !email.contains(".com")) {
-      Toast.show("Invalid email address".tr, context, duration: 3);
+    } else if (!GetUtils.isEmail(email)) {
+      Toast.show("Invalid email address", context, duration: 3);
       return;
     }
 
@@ -94,18 +95,20 @@ class _LoginState extends State<Login> {
       var result = await AuthHelper().login(email, password);
       print(result);
       dialog.hide();
-      if (result == "success") {
+      if (result == Constants.success) {
         Widget page;
-        if (StaticInfo.user.accountType == "user") {
-        } else if (StaticInfo.user.accountType == "owner") {
-          page = OwnerHomeScreen();
-        } else if (StaticInfo.user.accountType == "super_admin") {}
+        if (StaticInfo.user.accountType == Constants.user) {
+        } else if (StaticInfo.user.accountType == Constants.owner) {
+          // page = OwnerHomeScreen();
+        } else if (StaticInfo.user.accountType == Constants.admin) {}
+        page = OwnerHomeScreen();
+
         Get.offAll(page);
       } else {
         if (result == AuthStatus.ERROR_INVALID_EMAIL) {
-          Toast.show("Email address is invalid".tr, context, duration: 3);
+          Toast.show("Email address is invalid", context, duration: 3);
         } else if (result == AuthStatus.ERROR_WRONG_PASSWORD) {
-          Toast.show("Wrong password".tr, context, duration: 3);
+          Toast.show("Wrong password", context, duration: 3);
         } else if (result == AuthStatus.ERROR_USER_NOT_FOUND) {
           Toast.show("User not found", context, duration: 3);
         } else {

@@ -31,15 +31,18 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen> {
       ),
       body: SingleChildScrollView(
         child: loading == true
-            ? Center(child: CircularProgressIndicator())
+            ? Container(
+                width: Get.width,
+                height: Get.height,
+                child: Center(child: CircularProgressIndicator()))
             : Obx(
                 () => Column(
                   children: [
                     bookController.myBooks.length == 0
-                        ? Center(
-                            child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 30),
-                                child: Text(message)))
+                        ? Container(
+                            width: Get.width,
+                            height: Get.height,
+                            child: Center(child: Text(message)))
                         : ListView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),

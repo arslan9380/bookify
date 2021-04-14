@@ -13,10 +13,10 @@ class BookHelper {
           .doc(book.bookId)
           .set(book.toMap(), SetOptions(merge: true));
 
-      return success;
+      return Constants.success;
     } catch (e) {
       print("Error: $e");
-      return fail;
+      return Constants.fail;
     }
   }
 
@@ -44,15 +44,14 @@ class BookHelper {
           .collection(_books)
           .doc(book.bookId)
           .delete();
+      deleteFileFromStorage(book.bookUrl);
+      deleteFileFromStorage(book.coverPhotoUrl);
+      deleteFileFromStorage(book.endPagePhotoUrl);
 
-      await FirebaseStorage.instance.refFromURL(book.bookUrl).delete();
-      await FirebaseStorage.instance.refFromURL(book.coverPhotoUrl).delete();
-      await FirebaseStorage.instance.refFromURL(book.endPagePhotoUrl).delete();
-
-      return success;
+      return Constants.success;
     } catch (e) {
       print(e);
-      return fail;
+      return Constants.fail;
     }
   }
 
@@ -63,11 +62,18 @@ class BookHelper {
           .doc(book.bookId)
           .set(book.toMap(), SetOptions(merge: true));
 
-      return success;
+      return Constants.success;
     } catch (e) {
       print("Error: $e");
-      return fail;
+      return Constants.fail;
     }
   }
 
+  Future deleteFileFromStorage(String url) async {
+    try {
+      await FirebaseStorage.instance.refFromURL(url).delete();
+    } catch (e) {
+      print(e);
+    }
+  }
 }

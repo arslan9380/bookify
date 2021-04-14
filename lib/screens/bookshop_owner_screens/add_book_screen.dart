@@ -18,6 +18,7 @@ import 'package:toast/toast.dart';
 
 class AddBookScreen extends StatefulWidget {
   final BookModel bookModel;
+
   AddBookScreen({this.bookModel});
 
   @override
@@ -26,14 +27,18 @@ class AddBookScreen extends StatefulWidget {
 
 class _AddBookScreenState extends State<AddBookScreen> {
   TextEditingController descriptionCon = TextEditingController();
+  FocusNode descriptionNode = FocusNode();
   List<String> selectedGenre = [];
   File pdfBook;
   File coverPhoto;
   File endPagePhoto;
+
   @override
   void initState() {
-    selectedGenre.addAll(widget.bookModel.bookGenre);
-    descriptionCon.text=widget.bookModel.description;
+    if (widget.bookModel != null) {
+      selectedGenre.addAll(widget.bookModel.bookGenre);
+      descriptionCon.text = widget.bookModel.description;
+    }
     super.initState();
   }
 
@@ -41,7 +46,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.bookModel!= null?"Edit Book":"Add Book"),
+        title: Text(widget.bookModel != null ? "Edit Book" : "Add Book"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -51,14 +56,11 @@ class _AddBookScreenState extends State<AddBookScreen> {
             children: [
               GestureDetector(
                 onTap: () async {
-                  FilePickerResult result = await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ['pdf'],
-                  );
-                  if (result != null) {
-                    pdfBook = File(result.files.single.path);
-                    setState(() {});
-                    Toast.show("picked successfully", context);
+                  var file = await pickFile(pickImage: false);
+                  if (file != null) {
+                    setState(() {
+                      pdfBook = file;
+                    });
                   }
                 },
                 child: Container(
@@ -73,12 +75,16 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        pdfBook == null && widget.bookModel==null ? Icons.add : Icons.update,
+                        pdfBook == null && widget.bookModel == null
+                            ? Icons.add
+                            : Icons.update,
                         color: Theme.of(context).primaryColor,
                         size: 40,
                       ),
                       Text(
-                        pdfBook == null && widget.bookModel==null? "Pick Pdf book" : "Update book",
+                        pdfBook == null && widget.bookModel == null
+                            ? "Pick Pdf book"
+                            : "Update book",
                         style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontSize: 20),
@@ -93,14 +99,11 @@ class _AddBookScreenState extends State<AddBookScreen> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        FilePickerResult result = await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                          allowedExtensions: ['jpg', 'png'],
-                        );
-                        if (result != null) {
-                          coverPhoto = File(result.files.single.path);
-                          setState(() {});
-                          Toast.show("picked successfully", context);
+                        var file = await pickFile();
+                        if (file != null) {
+                          setState(() {
+                            coverPhoto = file;
+                          });
                         }
                       },
                       child: Container(
@@ -110,15 +113,20 @@ class _AddBookScreenState extends State<AddBookScreen> {
                             border: Border.all(
                                 color: Theme.of(context).primaryColor,
                                 width: 2),
-                            image: coverPhoto == null && widget.bookModel?.coverPhotoUrl==null
+                            image: coverPhoto == null &&
+                                    widget.bookModel?.coverPhotoUrl == null
                                 ? null
                                 : DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: widget.bookModel?.coverPhotoUrl!=""?
-                                        NetworkImage(widget.bookModel?.coverPhotoUrl):
-                                    FileImage(coverPhoto)
-                            )),
-                        child: coverPhoto != null
+                                    image: coverPhoto != null
+                                        ? FileImage(coverPhoto)
+                                        : widget.bookModel?.coverPhotoUrl !=
+                                                null
+                                            ? NetworkImage(
+                                                widget.bookModel?.coverPhotoUrl)
+                                            : null)),
+                        child: coverPhoto != null ||
+                                widget.bookModel?.coverPhotoUrl != null
                             ? SizedBox()
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -130,7 +138,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                     size: 40,
                                   ),
                                   Text(
-                                    "Pick book cover photo",
+                                    "Pick a book cover photo",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         color: Theme.of(context).primaryColor,
@@ -147,15 +155,11 @@ class _AddBookScreenState extends State<AddBookScreen> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        FilePickerResult result =
-                            await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                          allowedExtensions: ['jpg', 'png'],
-                        );
-                        if (result != null) {
-                          endPagePhoto = File(result.files.single.path);
-                          setState(() {});
-                          Toast.show("picked successfully", context);
+                        var file = await pickFile();
+                        if (file != null) {
+                          setState(() {
+                            endPagePhoto = file;
+                          });
                         }
                       },
                       child: Container(
@@ -165,12 +169,20 @@ class _AddBookScreenState extends State<AddBookScreen> {
                             border: Border.all(
                                 color: Theme.of(context).primaryColor,
                                 width: 2),
-                            image: endPagePhoto == null && widget.bookModel?.endPagePhotoUrl==null
+                            image: endPagePhoto == null &&
+                                    widget.bookModel?.endPagePhotoUrl == null
                                 ? null
                                 : DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: FileImage(endPagePhoto))),
-                        child: endPagePhoto != null && widget.bookModel?.endPagePhotoUrl !=null
+                                    image: endPagePhoto != null
+                                        ? FileImage(endPagePhoto)
+                                        : widget.bookModel?.endPagePhotoUrl !=
+                                                null
+                                            ? NetworkImage(widget
+                                                .bookModel.endPagePhotoUrl)
+                                            : null)),
+                        child: endPagePhoto != null ||
+                                widget.bookModel?.endPagePhotoUrl != null
                             ? SizedBox()
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -182,7 +194,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                                     size: 40,
                                   ),
                                   Text(
-                                    "Pick book cover photo",
+                                    "Pick a book end page photo",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         color: Theme.of(context).primaryColor,
@@ -202,6 +214,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                 maxlines: 8,
                 hint: "Type description here",
                 controller: descriptionCon,
+                focusNode: descriptionNode,
               ),
               SizedBox(height: 10),
               CustomButton(
@@ -209,6 +222,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                       ? "Select book genre"
                       : "Update book genre",
                   onPressed: () async {
+                    descriptionNode?.unfocus();
                     var result = await Get.to(PickBookGenre());
                     if (result != null) {
                       selectedGenre = result;
@@ -221,9 +235,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if(widget.bookModel==null){
+          descriptionNode?.unfocus();
+          if (widget.bookModel == null) {
             addBook();
-          }else{
+          } else {
             updateBook();
           }
         },
@@ -314,15 +329,14 @@ class _AddBookScreenState extends State<AddBookScreen> {
     }
   }
 
-  void updateBook()async{
-
+  void updateBook() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult != ConnectivityResult.mobile &&
         connectivityResult != ConnectivityResult.wifi) {
       Toast.show("it seems you don't have internet connection.", context);
       return;
     }
-    if(descriptionCon.text.isEmpty){
+    if (descriptionCon.text.isEmpty) {
       Toast.show("Please add short description of book.", context);
       return;
     }
@@ -337,29 +351,31 @@ class _AddBookScreenState extends State<AddBookScreen> {
     String coverPhotoUrl;
     String endPagePhotoUrl;
 
-    if(pdfBook!=null){
-     pdfBookUrl = await ImageHelper().uploadFiles(pdfBook, "Books");
+    if (pdfBook != null) {
+      pdfBookUrl = await ImageHelper().uploadFiles(pdfBook, "Books");
       if (pdfBookUrl == null) {
         Toast.show("Please try again later.", context);
         return;
       }
     }
 
-    if(coverPhoto!=null){
-      String coverPhotoUrl = await ImageHelper().uploadFiles(coverPhoto, "CoverPhotos");
+    if (coverPhoto != null) {
+      coverPhotoUrl =
+          await ImageHelper().uploadFiles(coverPhoto, "CoverPhotos");
       if (coverPhotoUrl == null) {
         Toast.show("Please try again later.", context);
         return;
       }
     }
 
-   if(endPagePhoto!=null){
-   endPagePhotoUrl = await ImageHelper().uploadFiles(endPagePhoto, "EndPagePhotos");
-   if (endPagePhotoUrl == null) {
-     Toast.show("Please try again later.", context);
-     return;
-   }
-   }
+    if (endPagePhoto != null) {
+      endPagePhotoUrl =
+          await ImageHelper().uploadFiles(endPagePhoto, "EndPagePhotos");
+      if (endPagePhotoUrl == null) {
+        Toast.show("Please try again later.", context);
+        return;
+      }
+    }
 
     BookModel bookModel = BookModel(
         bookUrl: pdfBookUrl ?? widget.bookModel.bookUrl,
@@ -369,15 +385,26 @@ class _AddBookScreenState extends State<AddBookScreen> {
         bookGenre: selectedGenre,
         isbnNo: widget.bookModel.isbnNo,
         bookId: widget.bookModel.bookId,
-        addedByUid:widget.bookModel.addedByUid,
+        addedByUid: widget.bookModel.addedByUid,
         addedBy: widget.bookModel.addedBy,
-        addedTime:widget.bookModel.addedTime);
+        addedTime: widget.bookModel.addedTime);
 
     var response = await BookHelper().addBook(bookModel);
     dialog.hide();
     if (response == "success") {
-   int index= Get.put(BookController()).myBooks.indexWhere((element) => element.bookId==widget.bookModel.bookId);
-     Get.put(BookController()).myBooks[index]=bookModel;
+      int index = Get.put(BookController())
+          .myBooks
+          .indexWhere((element) => element.bookId == widget.bookModel.bookId);
+      Get.put(BookController()).myBooks[index] = bookModel;
+      if (pdfBook != null) {
+        BookHelper().deleteFileFromStorage(widget.bookModel.bookUrl);
+      }
+      if (coverPhoto != null) {
+        BookHelper().deleteFileFromStorage(widget.bookModel.coverPhotoUrl);
+      }
+      if (endPagePhoto != null) {
+        BookHelper().deleteFileFromStorage(widget.bookModel.endPagePhotoUrl);
+      }
       Get.back();
       Get.snackbar("Hurray!", "Book Updated successfully",
           snackPosition: SnackPosition.BOTTOM,
@@ -391,5 +418,18 @@ class _AddBookScreenState extends State<AddBookScreen> {
           backgroundColor: Colors.black,
           duration: Duration(seconds: 2));
     }
+  }
+
+  Future<File> pickFile({bool pickImage = true}) async {
+    File pickedFile;
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: pickImage ? ['jpg', 'png'] : ['pdf'],
+    );
+    if (result != null) {
+      Toast.show("picked successfully", context);
+      pickedFile = File(result.files.single.path);
+    }
+    return pickedFile;
   }
 }

@@ -1,5 +1,5 @@
-import 'package:bookify/screens/auth_screens/login.dart';
-import 'package:bookify/screens/auth_screens/sign_up.dart';
+import 'package:bookify/screens/auth_screens/login_screen.dart';
+import 'package:bookify/screens/auth_screens/sign_up_screen.dart';
 import 'package:bookify/screens/widgets/tab_box.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +17,7 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints:
-                BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -76,8 +75,8 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
                       IndexedStack(
                         index: selectTab,
                         children: [
-                          Login(),
-                          SignUp(),
+                          LoginScreen(),
+                          SignUpScreen(),
                         ],
                       ),
                     ],
